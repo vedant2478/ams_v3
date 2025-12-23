@@ -3,6 +3,7 @@ from components.header import Header
 from pages.idle_screen import IdleScreen
 from pages.auth_type import AuthTypePage
 from pages.card_auth import CardAuthPage
+from pages.pin_entry import PinEntryPage
 
 
 class App(ctk.CTk):
@@ -31,6 +32,7 @@ class App(ctk.CTk):
         self.pages["idle"] = IdleScreen(self.page_container, controller=self)
         self.pages["auth"] = AuthTypePage(self.page_container, controller=self)
         self.pages["card"] = CardAuthPage(self.page_container, controller=self)
+        self.pages["pin"] = PinEntryPage(self.page_container, controller=self)
 
         for page in self.pages.values():
             page.grid(row=0, column=0, sticky="nsew")
