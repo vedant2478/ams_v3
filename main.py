@@ -47,7 +47,7 @@ class App(ctk.CTk):
     # -------- page switching with optional fade --------
 
     def show_page(self, name: str, animate: bool = True):
-        """Raise page by name; manage card timer and optional fade."""
+        """Instantly switch to the given page."""
         if name == self.current_page:
             return
 
@@ -57,12 +57,9 @@ class App(ctk.CTk):
         if name == "card":
             self.pages["card"].reset_timer()
 
-        new_page = self.pages[name]
-
-        if not animate:
-            new_page.tkraise()
-            self.current_page = name
-            return
+        page = self.pages[name]
+        page.tkraise()
+        self.current_page = name
 
         # simple fade transition
         def step(alpha):
