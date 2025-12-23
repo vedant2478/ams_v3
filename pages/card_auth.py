@@ -147,19 +147,12 @@ class CardAuthPage(ctk.CTkFrame):
         fraction = min(self._elapsed_ms / total_ms, 1.0)
         self.progress.set(fraction)
         self.remaining_var.set(f"Time remaining: {remaining_sec} s")
-        self._ask_scan_and_route()
 
         if self._elapsed_ms < total_ms:
             self._after_id = self.after(self._tick_interval, self._progress_tick)
-           
         else:
-            # timer finished: ask on terminal (blocks GUI until answered)
             self._timer_running = False
-            
-
-    def _ask_scan_and_route(self):
-        answer = input("Scan card? (y/n): ").strip().lower()
-        if answer == "y":
+            # TEMP behaviour: go straight to PIN page
             self.controller.show_page("pin")
-        else:
-            self.controller.show_page("auth")
+
+

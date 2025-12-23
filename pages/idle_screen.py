@@ -14,7 +14,7 @@ class IdleScreen(ctk.CTkFrame):
         self.canvas = ctk.CTkCanvas(self, bg="#040b36", highlightthickness=0)
         self.canvas.grid(row=0, column=0, sticky="nsew")
 
-        self.hour_id = self.minute_id = self.seconds_id = None
+        self.hour_id = self.minuate_id = self.seconds_id = None
         self.date_id = self.swipe_id = None
         self._rings = []
         self._angle = 0
@@ -78,23 +78,29 @@ class IdleScreen(ctk.CTkFrame):
         cx = w / 2
         cy = h / 2
 
-        # scale fonts with height
-        big_font = int(h * 0.25)      # main digits
-        sec_font = int(h * 0.06)
-        date_font = int(h * 0.06)
+        # tweak font scale for portrait vs landscape
+        if h > w:          # portrait: make digits smaller
+            big_font = int(h * 0.18)
+        else:              # landscape
+            big_font = int(h * 0.25)
 
-        # more vertical gap between hour and minute
+        sec_font = int(big_font * 0.25)
+        date_font = int(big_font * 0.25)
+
+        # hour / minute
         self.canvas.itemconfigure(self.hour_id, font=("Inter", big_font, "bold"))
-        self.canvas.coords(self.hour_id, cx, cy - big_font * 0.9)
+        self.canvas.coords(self.hour_id, cx, cy - big_font * 0.8)
 
         self.canvas.itemconfigure(self.minute_id, font=("Inter", big_font, "bold"))
-        self.canvas.coords(self.minute_id, cx, cy + big_font * 0.1)
+        self.canvas.coords(self.minute_id, cx, cy + big_font * 0.2)
 
         # seconds to the right
         self.canvas.itemconfigure(self.seconds_id, font=("Inter", sec_font, "bold"))
-        self.canvas.coords(self.seconds_id,
-                           cx + big_font * 0.9,
-                           cy + big_font * 0.1)
+        self.canvas.coords(
+            self.seconds_id,
+            cx + big_font * 0.8,
+            cy + big_font * 0.2
+        )
 
         # date under time
         self.canvas.itemconfigure(self.date_id, font=("Inter", date_font, "bold"))
@@ -103,9 +109,8 @@ class IdleScreen(ctk.CTkFrame):
         # swipe text bottom center
         self.canvas.coords(self.swipe_id, w / 2, h - 40)
 
-        # zoomed‑out, thinner rings for less blur
+        # rings (unchanged)
         if len(self._rings) == 3:
-            # left-bottom arc
             self.canvas.coords(
                 self._rings[0],
                 -w * 0.1, h * 0.45,
@@ -113,7 +118,6 @@ class IdleScreen(ctk.CTkFrame):
             )
             self.canvas.itemconfigure(self._rings[0], width=h * 0.035)
 
-            # center diagonal arc
             self.canvas.coords(
                 self._rings[1],
                 w * 0.15, -h * 0.25,
@@ -121,7 +125,6 @@ class IdleScreen(ctk.CTkFrame):
             )
             self.canvas.itemconfigure(self._rings[1], width=h * 0.03)
 
-            # right arc
             self.canvas.coords(
                 self._rings[2],
                 w * 0.45, h * 0.05,
