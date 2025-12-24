@@ -12,22 +12,25 @@ class App(ctk.CTk):
 
         self.title("Kiosk UI")
         self.attributes("-fullscreen", True)
+        # fixed portrait window for kiosk
+        # self.geometry("600x1024")
+        self.resizable(False, False)
 
         self.grid_rowconfigure(1, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
-        # ---------- header ----------
+        # header
         self.header = Header(self)
         self.header.grid(row=0, column=0, sticky="nsew")
 
-        # ---------- page container ----------
-        self.page_container = ctk.CTkFrame(self, fg_color="#040b36")
+        # page container
+        self.page_container = ctk.CTkFrame(self, fg_color="#071044")
         self.page_container.grid(row=1, column=0, sticky="nsew")
 
         self.page_container.grid_rowconfigure(0, weight=1)
         self.page_container.grid_columnconfigure(0, weight=1)
 
-        # ---------- pages ----------
+        # pages
         self.pages = {}
         self.pages["idle"] = IdleScreen(self.page_container, controller=self)
         self.pages["auth"] = AuthTypePage(self.page_container, controller=self)
@@ -37,21 +40,16 @@ class App(ctk.CTk):
         for page in self.pages.values():
             page.grid(row=0, column=0, sticky="nsew")
 
-        # start state: idle is on top
         self.current_page = "idle"
         self.pages["idle"].tkraise()
 
-        # Esc quits app
         self.bind("<Escape>", lambda e: self.destroy())
 
-    # -------- page switching with optional fade --------
-
-    def show_page(self, name: str, animate: bool = True):
-        """Instantly switch to the given page."""
+    def show_page(self, name: str):
+        """Instant switch between pages."""
         if name == self.current_page:
             return
 
-        # manage card timer when leaving/entering card page
         if self.current_page == "card":
             self.pages["card"].stop_timer()
         if name == "card":
@@ -60,20 +58,6 @@ class App(ctk.CTk):
         page = self.pages[name]
         page.tkraise()
         self.current_page = name
-
-        # simple fade transition
-        def step(alpha):
-            if alpha <= 0.6:
-                new_page.tkraise()
-            if alpha <= 1.0:
-                self.attributes("-alpha", alpha)
-            if alpha < 1.0:
-                self.after(20, step, alpha + 0.05)
-            else:
-                self.attributes("-alpha", 1.0)
-                self.current_page = name
-
-        self.after(0, step, 0.6)
 
 
 if __name__ == "__main__":
